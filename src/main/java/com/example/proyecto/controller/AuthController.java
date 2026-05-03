@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.proyecto.dtos.LoginDto;
 import com.example.proyecto.dtos.LoginResponseDto;
-import com.example.proyecto.services.AuthService;
+import com.example.proyecto.Services.AuthService;
 
 import jakarta.validation.Valid;
  

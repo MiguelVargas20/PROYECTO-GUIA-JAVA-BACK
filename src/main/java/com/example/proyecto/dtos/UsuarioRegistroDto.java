@@ -22,7 +22,7 @@ public class UsuarioRegistroDto {
     // ── Datos de perfil ──────────────────────────────────────
     private String nombre;
     private String apellido;
-    private Documento Id;
+    private Documento docId;        // ← corregido: era "Id" con mayúscula
     private String telefono;
     private String correo;
     private Direccion direccion;

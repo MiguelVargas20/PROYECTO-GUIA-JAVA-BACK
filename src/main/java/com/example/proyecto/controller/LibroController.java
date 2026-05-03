@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.proyecto.dtos.LibroDto;
 import com.example.proyecto.model.EstadoLibro;
-import com.example.proyecto.services.LibroService;
+import com.example.proyecto.Services.LibroService;
 
 import jakarta.validation.Valid;
 

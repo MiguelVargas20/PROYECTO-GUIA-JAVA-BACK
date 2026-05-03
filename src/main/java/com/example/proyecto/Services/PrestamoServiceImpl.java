@@ -1,4 +1,4 @@
-package com.example.proyecto.services;
+package com.example.proyecto.Services;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,22 +39,22 @@ public class PrestamoServiceImpl implements PrestamoService {
     public PrestamoDto crearPrestamo(PrestamoDto dto) {
  
         // 1. Validar que el usuario existe
-        if (!usuarioRepo.existsById(dto.getUsuarioId())) {
-            throw new RuntimeException("Usuario no encontrado con ID: " + dto.getUsuarioId());
+        if (!usuarioRepo.existsById(dto.getIdUsuario())) {
+            throw new RuntimeException("Usuario no encontrado con ID: " + dto.getIdUsuario());
         }
  
         // 2. Validar que el usuario no tenga ya un préstamo ACTIVO
-        if (prestamoRepo.existsByUsuarioIdAndEstado(dto.getUsuarioId(), EstadoPrestamo.ACTIVO)) {
+        if (prestamoRepo.existsByUsuarioIdAndEstado(dto.getIdUsuario(), EstadoPrestamo.ACTIVO)) {
             throw new RuntimeException("El usuario ya tiene un préstamo activo pendiente de devolución.");
         }
  
         // 3. Validar que se enviaron libros
-        if (dto.getLibroIds() == null || dto.getLibroIds().isEmpty()) {
+        if (dto.getIdsLibros() == null || dto.getIdsLibros().isEmpty()) {
             throw new RuntimeException("El préstamo debe incluir al menos un libro.");
         }
  
         // 4. Validar disponibilidad de cada libro y descontar ejemplares
-        for (String libroId : dto.getLibroIds()) {
+        for (String libroId : dto.getIdsLibros()) {
             Libro libro = libroRepo.findById(libroId)
                     .orElseThrow(() -> new RuntimeException("Libro no encontrado con ID: " + libroId));
  
@@ -79,11 +79,11 @@ public class PrestamoServiceImpl implements PrestamoService {
         // 6. Crear el préstamo
         Prestamo prestamo = Prestamo.builder()
                 .id(idPrestamo)
-                .usuarioId(dto.getUsuarioId())
-                .libroIds(dto.getLibroIds())
+                .usuarioId(dto.getIdUsuario())
+                .libroIds(dto.getIdsLibros())
                 .fechaPrestamo(LocalDateTime.now())
-                .fechaLimite(dto.getFechaLimite() != null
-                        ? dto.getFechaLimite()
+                .fechaLimite(dto.getFLimite() != null
+                        ? dto.getFLimite()
                         : LocalDate.now().plusDays(15)) // 15 días por defecto
                 .fechaDevolucion(null)
                 .estado(EstadoPrestamo.ACTIVO)

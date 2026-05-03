@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.proyecto.dtos.UsuarioDto;
 import com.example.proyecto.dtos.UsuarioRegistroDto;
-import com.example.proyecto.services.UsuarioService;
+import com.example.proyecto.Services.UsuarioService;
 
 import jakarta.validation.Valid;
 
