@@ -48,6 +48,8 @@ public class SecurityConfig {
                     .hasAnyAuthority("ADMINISTRADOR", "BIBLIOTECARIO", "LECTOR")
                 .requestMatchers(HttpMethod.PUT, "/api/usuarios/**")
                     .hasAnyAuthority("ADMINISTRADOR", "BIBLIOTECARIO", "LECTOR")
+                    .requestMatchers(HttpMethod.GET, "/api/usuarios/{id}")
+                .hasAnyAuthority("ADMINISTRADOR", "BIBLIOTECARIO", "LECTOR")
 
                 // ── Solo ADMINISTRADOR ───────────────────────────────────────
 
