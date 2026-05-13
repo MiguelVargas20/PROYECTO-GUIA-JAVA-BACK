@@ -2,6 +2,7 @@ package com.example.proyecto.Services;
 
 import java.util.List;
 
+import com.example.proyecto.dtos.CambiarPasswordDto;
 import com.example.proyecto.dtos.UsuarioDto;
 import com.example.proyecto.dtos.UsuarioRegistroDto;
 
@@ -25,6 +26,9 @@ public interface UsuarioService {
  
     /** Actualiza datos de perfil. No toca credenciales */
     UsuarioDto actualizarUsuario(String id, UsuarioDto dto);
+
+     /** Cambia la contraseña verificando la actual primero */
+    void cambiarPassword(String id, CambiarPasswordDto dto);
  
     /** Elimina perfil y credenciales del usuario */
     void eliminarUsuario(String id);

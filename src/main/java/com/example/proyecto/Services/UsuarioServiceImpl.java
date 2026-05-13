@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.proyecto.dtos.CambiarPasswordDto;
 import com.example.proyecto.dtos.UsuarioDto;
 import com.example.proyecto.dtos.UsuarioRegistroDto;
 import com.example.proyecto.mapper.UsuarioMapper;
@@ -129,7 +130,39 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return usuarioMapper.toDto(usuarioRepo.save(existente));
     }
+/*** Cambia la contraseña del usuario.*
+     * Lógica:
+     *  1. Busca las credenciales en UsuarioAuth por ID
+     *  2. Verifica que la contraseña actual sea correcta con BCrypt
+     *  3. Encripta la nueva y la guarda
+     *
+     * PATCH /api/usuarios/{id}/password
+     * Body: { passwordActual, passwordNueva }
+     */
 
+    @Override
+    @Transactional
+    public void cambiarPassword(String id, CambiarPasswordDto dto) {
+ 
+        // 1. Buscar credenciales
+        UsuarioAuth auth = authRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Credenciales no encontradas para ID: " + id));
+ 
+        // 2. Verificar que la contraseña actual es correcta
+        if (!passwordEncoder.matches(dto.getPasswordActual(), auth.getPassword())) {
+            throw new RuntimeException("La contraseña actual es incorrecta.");
+        }
+ 
+        // 3. Validar que la nueva no esté vacía
+        if (dto.getPasswordNueva() == null || dto.getPasswordNueva().length() < 8) {
+            throw new RuntimeException("La nueva contraseña debe tener al menos 8 caracteres.");
+        }
+ 
+        // 4. Encriptar y guardar
+        auth.setPassword(passwordEncoder.encode(dto.getPasswordNueva()));
+        authRepo.save(auth);
+    }
+ 
     @Override
     @Transactional
     public void eliminarUsuario(String id) {

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.proyecto.dtos.CambiarPasswordDto;
 import com.example.proyecto.dtos.UsuarioDto;
 import com.example.proyecto.dtos.UsuarioRegistroDto;
 import com.example.proyecto.Services.UsuarioService;
@@ -67,6 +69,22 @@ public class UsuarioController {
             @PathVariable String id,
             @RequestBody UsuarioDto dto) {
         return ResponseEntity.ok(usuarioService.actualizarUsuario(id, dto));
+    }
+
+        /*** PATCH /api/usuarios/{id}/password
+         * * Cambia la contraseña del usuario.
+     * Body: { "passwordActual": "...", "passwordNueva": "..." }
+     *
+     * Separado del PUT para mayor claridad y seguridad.
+     * Solo el propio usuario o un ADMIN debería llamar este endpoint.
+     */
+    
+    @PatchMapping("/{id}/password")
+    public ResponseEntity<Void> cambiarPassword(
+            @PathVariable String id,
+            @RequestBody CambiarPasswordDto dto) {
+        usuarioService.cambiarPassword(id, dto);
+        return ResponseEntity.noContent().build(); // 204 — sin contenido, éxito
     }
 
     // DELETE /api/usuarios/{id}

@@ -42,37 +42,39 @@ public class SecurityConfig {
                     "/api/usuarios/registro"
                 ).permitAll()
 
-                // ── Perfil propio: LECTOR, BIBLIOTECARIO y ADMINISTRADOR ─────
-                // Debe ir ANTES de las reglas de ADMINISTRADOR para que no las pise
+                // ── Perfil propio: todos los roles ───────────────────────────
+                // IMPORTANTE: van ANTES de las reglas de ADMINISTRADOR
+
+                // Ver perfil por ID
+                .requestMatchers(HttpMethod.GET, "/api/usuarios/{id}")
+                    .hasAnyAuthority("ADMINISTRADOR", "BIBLIOTECARIO", "LECTOR")
+
+                // Ver perfil por correo
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/correo/**")
                     .hasAnyAuthority("ADMINISTRADOR", "BIBLIOTECARIO", "LECTOR")
+
+                // Editar perfil (datos personales)
                 .requestMatchers(HttpMethod.PUT, "/api/usuarios/**")
                     .hasAnyAuthority("ADMINISTRADOR", "BIBLIOTECARIO", "LECTOR")
-                    .requestMatchers(HttpMethod.GET, "/api/usuarios/{id}")
-                .hasAnyAuthority("ADMINISTRADOR", "BIBLIOTECARIO", "LECTOR")
+
+                // Cambiar contraseña — endpoint separado
+                .requestMatchers(HttpMethod.PATCH, "/api/usuarios/*/password")
+                    .hasAnyAuthority("ADMINISTRADOR", "BIBLIOTECARIO", "LECTOR")
 
                 // ── Solo ADMINISTRADOR ───────────────────────────────────────
-
-                // Gestión completa de usuarios (listar todos, buscar por doc, eliminar)
                 .requestMatchers(HttpMethod.GET,    "/api/usuarios/**").hasAuthority("ADMINISTRADOR")
                 .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasAuthority("ADMINISTRADOR")
 
-                // Crear y eliminar libros
                 .requestMatchers(HttpMethod.POST,   "/api/libros/**").hasAuthority("ADMINISTRADOR")
                 .requestMatchers(HttpMethod.DELETE, "/api/libros/**").hasAuthority("ADMINISTRADOR")
 
-                // Eliminar préstamos
                 .requestMatchers(HttpMethod.DELETE, "/api/prestamos/**").hasAuthority("ADMINISTRADOR")
 
                 // ── ADMINISTRADOR o BIBLIOTECARIO ────────────────────────────
-
-                // Editar libros y actualizar vencidos
                 .requestMatchers(HttpMethod.PUT,   "/api/libros/**")
                     .hasAnyAuthority("ADMINISTRADOR", "BIBLIOTECARIO")
                 .requestMatchers(HttpMethod.PATCH, "/api/prestamos/vencidos")
                     .hasAnyAuthority("ADMINISTRADOR", "BIBLIOTECARIO")
-
-                // Gestión de préstamos (crear, devolver, listar todos)
                 .requestMatchers(HttpMethod.POST,  "/api/prestamos/**")
                     .hasAnyAuthority("ADMINISTRADOR", "BIBLIOTECARIO")
                 .requestMatchers(HttpMethod.PATCH, "/api/prestamos/**")
@@ -80,13 +82,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,   "/api/prestamos/**")
                     .hasAnyAuthority("ADMINISTRADOR", "BIBLIOTECARIO")
 
-                // ── LECTOR (solo consulta) ───────────────────────────────────
-
-                // Ver catálogo de libros
+                // ── LECTOR ───────────────────────────────────────────────────
                 .requestMatchers(HttpMethod.GET, "/api/libros/**")
                     .hasAnyAuthority("ADMINISTRADOR", "BIBLIOTECARIO", "LECTOR")
 
-                // ── Todo lo demás requiere autenticación ─────────────────────
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -94,7 +93,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // CORS: permite solicitudes desde el frontend
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
